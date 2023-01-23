@@ -1,38 +1,30 @@
-from numpy import ndarray,argsort, arange,std
+# Code for model training for Data Science Course
+# By João Raposo ist197377
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+from numpy import ndarray,argsort, std
 from pandas import DataFrame, read_csv, unique
-from matplotlib.pyplot import figure, savefig, show
+from matplotlib.pyplot import figure, savefig
 import matplotlib as mpl
-# from sklearn.naive_bayes import GaussianNB,BernoulliNB,MultinomialNB
 import numpy as np
-from sklearn.model_selection import KFold,train_test_split
-from ds_charts import get_variable_types, choose_grid, HEIGHT, bar_chart, multiple_line_chart
+from ds_charts import HEIGHT, bar_chart, multiple_line_chart
 import ds_charts as ds
 from sklearn.metrics import accuracy_score,recall_score,f1_score
-import pandas as pd
-# from sklearn.neighbors import KNeighborsClassifier
 from cuml.neighbors import KNeighborsClassifier
 from cuml.naive_bayes import GaussianNB,BernoulliNB,MultinomialNB
 import cupy as cp
-# from cuml.ensemble import RandomForestClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier,export_graphviz
-from matplotlib.pyplot import imread, imshow, axis
 from subprocess import call
 from pathlib import Path
 import time
 import cuml
-from torch import nn
-# from cuml.model_selection import train_test_split
 import sys
 import cudf 
 import sklearn.model_selection
 import os
 from sklearn.neural_network import MLPClassifier
 from joblib import dump,load
-import torch
-from torch import nn
-import torch.nn.functional as F
-from skorch import NeuralNetClassifier
 from xgboost import XGBClassifier
 def plot_overfitting_study(xvalues, prd_trn, prd_tst, name, xlabel, ylabel):
     evals = {'Train': prd_trn, 'Test': prd_tst}
@@ -128,14 +120,11 @@ trnY = cp.array(classes.to_numpy(),cp.float32).T[0]
 
 
 
-
-
-
-
-
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #
 #   All algorithms assume tstX, tstY, trnX and trnY are passed as prepared above.
+#   Code should be independent of datasets
+#   Parameters can be changed at the top of each algorithm section
 #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -313,8 +302,6 @@ if doKNN:
     prd_tst_by_model = {}
     nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19,25,31,39,45,51,61,71,81,91,101]
     dist = ['manhattan', 'euclidean', 'chebyshev']
-    # nvalues = [1, 3]
-    # dist = ['manhattan', 'euclidean','chebyshev']
     values = {}
     for d in dist:
         for n in nvalues:
@@ -462,12 +449,6 @@ doBestValsDT = True
 if doDecisionTrees:
     prd_trn_by_model = {}
     prd_tst_by_model = {}
-
-    # min_impurity_decrease = [0.01, 0.005, 0.0025, 0.001, 0.0005]
-    # max_depths = [2, 5, 10, 15, 20, 25]
-
-    # min_impurity_decrease = [0.01, 0.005]
-    # max_depths = [2,3]
     
     min_impurity_decrease = [0.01, 0.005, 0.0025, 0.001, 0.0005,0.0001,0]
     max_depths = [2,5, 10, 15, 20, 25,35,55]
@@ -651,14 +632,10 @@ doBestValsRF = False
 
 if doRandomForest:
     criteria = ['entropy']
-    # criteria = ['entropy', 'gini']
     
     n_estimators = [1,2,3,4,5, 10, 25, 50, 75, 100, 200, 300, 400]
     max_depths = [5, 10,25]
     max_features = [.3, .5, .7, 1]
-    # n_estimators = [200]
-    # max_depths = [25]
-    # max_features = [.7]
     importancesByModel = {}
     stdevsByModel = {}
     prd_trn_by_model = {}
@@ -1022,17 +999,10 @@ doBestValsGB = False
 
 if doGradBoost:
     print("Entering Gradient boosting")
-# Gradient Boost
-    # clf = XGBClassifier(n_estimators=100, max_depth=15, learning_rate=0.1,n_jobs=4,tree_method="gpu_hist",gpu_id=0,predictor="gpu_predictor",max_bin=1000)
-
     
     n_estimators = [5, 10, 25, 50, 75, 100, 250, 500, 1000]
     max_depths = [5, 10, 25]
     learning_rate = [0.01,.05,.1, .5, .9]
-
-    # n_estimators = [400]
-    # max_depths = [25]
-    # learning_rate = [ .1]
 
     n_estimators = [1000,]
     max_depths = [5, ]
@@ -1050,8 +1020,6 @@ if doGradBoost:
                 for estim in n_estimators:
                     ti = time.process_time()
                     print(f"GB_{c}_depth-{d}_learning_rate-{f}_estimators-{estim}")
-                    # clf = sklearn.ensemble.GradientBoostingClassifier(n_estimators=estim, max_depth=d, learning_rate=f,max_features=0.7)
-                    # clf = sklearn.ensemble.HistGradientBoostingClassifier( max_depth=d, learning_rate=f)
                     clf = XGBClassifier(n_estimators=estim, max_depth=d, learning_rate=f,n_jobs=1,tree_method="gpu_hist",gpu_id=0,predictor="gpu_predictor",max_bin=1000)
                     clf.fit(trnX.get(), trnY.get())
                     prd_trn = clf.predict(trnX.get())
