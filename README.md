@@ -2,6 +2,17 @@
 by João Raposo ist197377
 
 ---
+## Running code
+
+Example: python fitKNN_Bayes_overfittingTest_separateTestTrain.py ../final_datasets/health/health_train_selection.csv ../final_datasets/health/health_test_selection.csv readmitted ","
+
+Arguments for python file:
+1. location of train dataset file, relative to python file
+2. location of test dataset file, relative to python file
+3. Name of the target column
+4. Separator used in the csv file
+
+---
 ## USEFUL TIPS
 
 - I'd recommend first training all classifiers with the required parameters, and [saving them](https://scikit-learn.org/stable/model_persistence.html) using joblib. This way even if the graphics come out wrong, you don't have to retrain the models.
